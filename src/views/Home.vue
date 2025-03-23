@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 </script>
 
-<template>
+<template class="body">
   <Header class="header">
     <nav>
       <div><RouterLink to="/signin">Sign In</RouterLink></div>
@@ -17,6 +17,7 @@ const router = useRouter()
   <main class="padding-block-700">
       <section class="container center vertical">
           <h1 class="fs-primary-heading">Welcome to All Net</h1>
+          <p>"All Net - Where Every Bet is a Slam Dunk"</p>
       </section>
   </main>
 </template>
@@ -25,5 +26,10 @@ const router = useRouter()
 :deep(a) {
   text-decoration: none;
   color: black;
+}
+
+p {
+  color: white;
+  font-size: 20px;
 }
 </style>

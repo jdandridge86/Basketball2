@@ -2,13 +2,16 @@
 import Header from '../components/Header.vue'
 import { useRouter } from 'vue-router'
 import { ref , reactive } from 'vue'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 
 let email = ref("")
-let userName = ref("")
+let username = ref("")
 let password = ref("")
 let password2 = ref("")
+
+const userStore = useUserStore();
 
 async function join (event) {
 	event.preventDefault()
@@ -16,7 +19,7 @@ async function join (event) {
 	let errorMsg = document.querySelector("#errorMsg");
 
 	// do some input validation
-	if (email.value !== '' && userName.value !== '' && password.value !== '' && password2.value !== '') {
+	if (email.value !== '' && username.value !== '' && password.value !== '' && password2.value !== '') {
 		
 		if (password.value !== password2.value) {
 			console.log(password.value)
@@ -27,11 +30,11 @@ async function join (event) {
 
 		const data = {
 			email: email.value,
-			userName: userName.value,
+			username: username.value,
 			password: password.value
 		}
 
-		const url = 'https://hap-app-api.azurewebsites.net/user'
+		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/user`
 
 		const options = {
 			method: "POST",
@@ -54,7 +57,7 @@ async function join (event) {
 			userStore.setUser(
 				data.user.firstName,
 				data.user.lastName,
-				data.user.userName,
+				data.user.username,
 				data.user.email,
 				data.token
 			)
@@ -76,7 +79,7 @@ async function join (event) {
 }
 </script>
 
-<template>
+<template class="body">
   <Header class="header">
     <nav>
       <div><RouterLink to="/">Home</RouterLink></div>
@@ -90,7 +93,7 @@ async function join (event) {
           <form>
 				<fieldset>
 					<label>Username:   </label>
-					<input type="username" required id="username" v-model="userName"><br /><br />					
+					<input type="username" required id="username" v-model="username"><br /><br />					
 
 					<label>Email:   </label>
 					<input type="email" required id="email" v-model="email"><br /><br />
