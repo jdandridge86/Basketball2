@@ -1,67 +1,41 @@
 <script setup>
 import Header from '../components/Header.vue'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
-async function signIn(e) {
-	e.preventDefault()
-
-	// TODO: get email and password from the form
-	const email = "joe2@example.com"
-	const password = "test1234"
-
-	const data = { email, password }
-
-	const url = 'https://hap-app-api.azurewebsites.net/user/login'
-
-	const options = {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(data),
-	}
-
-	let response = await fetch(url, options)
-
-	if (response.status === 200) {
-		const data = await response.json()
-
-		localStorage.setItem("token", data.token)
-		console.log(data)
-
-		//TODO: Store username in localStorage as well
-
-		router.push({
-			name: 'main'
-		})
-	}
-	else if (response.status === 400) {
-		// TODO: Display error message to screen
-		console.log("Invalid email or password.")
-	}
-}
-
 </script>
 
 <template>
-	<Header>
-		<nav>
-			<RouterLink to="/">Home</RouterLink>
-		</nav>
-	</Header>
+  <Header class="header">
+    <nav>
+      <div><RouterLink to="/">Home</RouterLink></div>
+      <div><RouterLink to="/signup">Sign Up</RouterLink></div>
+    </nav>
+  </Header>
 
-	<main class="padding-block-700">
-		<section class="container center">
-			<button class="button" @click="signIn">Sign In</button>
-		</section>
-	</main>
+  <main class="padding-block-700">
+      <section class="container center vertical">
+          <h1 class="fs-primary-heading">Log In</h1>
+          <form>
+				<fieldset>
+					<label>Email:   </label>
+					<input type="email" required id="email" v-model="email"><br /><br />
+
+					<label>Password:   </label>
+					<input type="password" minlength="8" required id="password" v-model="password"><br /><br />
+
+					<div id="errorMsg"></div>
+
+					<div class="centeredButton">
+            <button class="button" @click="signIn">Sign In</button>
+          </div>
+
+				</fieldset>
+			</form>
+      </section>
+  </main>
 </template>
 
 <style scoped>
-
 :deep(a) {
-	text-decoration: none;
+  text-decoration: none;
+  color: black;
 }
 </style>

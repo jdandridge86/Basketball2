@@ -267,8 +267,14 @@ body {
     font-size: var(--fs-button);
     line-height: 1;
     color: var(--clr-neutral-100);
-    background-color: var(--clr-accent-400);
+    background-color: #7C0A01;
     box-shadow: 0 1.125em 1em -1em var(--clr-accent-500);
+}
+
+.centeredButton {
+    display: grid;
+    place-items: center;
+    margin-top: 15px;
 }
 
 .button[data-type="inverted"] {
@@ -287,10 +293,28 @@ body {
     color: var(--clr-accent-300);
 }
 
-.header {
+.header {    
     background-color: #E3B048;
+}
+
+.header nav div {
+    display: inline-block;
+    padding: 20px;
 }
 
 h1 {
     color: #E3B048
+}
+
+fieldset {
+    background-color: white;
+    color: black;
+    padding: 70px;
+    margin: 40px;
+    width: 100%;
+}
+
+input {
+    background-color: lightgrey;
+    float: right;
 }

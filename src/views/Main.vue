@@ -1,22 +1,17 @@
 <script setup>
 import Header from '../components/Header.vue'
-
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
 </script>
 
 <template>
   <Header class="header">
     <nav>
-      <div><RouterLink to="/signin">Sign In</RouterLink></div>
-      <div><RouterLink to="/signup">Sign Up</RouterLink></div>
+      <RouterLink to="/signin">Sign In</RouterLink>
     </nav>
   </Header>
 
   <main class="padding-block-700">
       <section class="container center vertical">
-          <h1 class="fs-primary-heading">Welcome to All Net</h1>
+          <h1 class="fs-primary-heading">Welcome, User!</h1>
       </section>
   </main>
 </template>

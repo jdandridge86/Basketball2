@@ -1,16 +1,12 @@
 <script setup>
 import Header from '../components/Header.vue'
-
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
 </script>
 
 <template>
   <Header class="header">
     <nav>
-      <div><RouterLink to="/signin">Sign In</RouterLink></div>
-      <div><RouterLink to="/signup">Sign Up</RouterLink></div>
+      <RouterLink to="/signin">Sign In</RouterLink>
+
     </nav>
   </Header>
 
