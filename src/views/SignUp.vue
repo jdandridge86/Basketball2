@@ -89,7 +89,7 @@ async function join (event) {
 
   <main class="padding-block-700">
       <section class="container center vertical">
-          <h1 class="fs-primary-heading">Sign Up</h1>
+          <h1 class="fs-primary-heading">Register</h1>
           <form>
 				<fieldset>
 					<label>Username:   </label>
