@@ -55,8 +55,6 @@ async function join (event) {
 			const data = await response.json()
 			
 			userStore.setUser(
-				data.user.firstName,
-				data.user.lastName,
 				data.user.username,
 				data.user.email,
 				data.token
