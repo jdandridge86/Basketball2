@@ -6,9 +6,39 @@ import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore();
 
+const items = ref([])
 const router = useRouter()
+let playerName = ref("");
+let playerNameParam = playerName.value;
 
 const user = userStore.username;
+
+async function PlayerSearch (event, playerNameParam) {
+	event.preventDefault()
+
+  const token = userStore.token;
+  
+	
+		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/players?name-search=${playerNameParam}`
+
+		const options = {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		}
+
+		let response = await fetch(url, options)	
+		
+		if (response.status === 200) {
+			
+      let data = await response.json()
+      console.log(data)
+
+      items.value = data.data;
+
+		}
+	} 
 
 
 async function logout (event) {
@@ -96,14 +126,69 @@ async function logout (event) {
 
   <main class="padding-block-700">
       <section class="container center vertical">
+        <!--"container center vertical"-->
           <h1 class="fs-primary-heading">Players</h1>
+          <section class="split">
+            <div class="search">
+              <label>Player's Name:   </label><br>
+              <input type="text" required id="playerName" v-model="playerName"><br><br>				
+
+              <div class="centeredButton">
+                  <button class="button" @click="PlayerSearch($event, playerName)">Search</button>
+              </div>
+
+            </div>
+
+
+            <div class="results">
+              <div v-for="item in items" :FirstName="item.first_name" :LastName="item.last_name ":TeamName="item.team.full_name">
+                <p>Player's Name: {{ item.first_name}} {{ item.last_name }}</p>
+                <p>Team's Name: {{ item.team.full_name }}</p><br>
+              </div>
+            </div>
+          </section>
       </section>
   </main>
 </template>
 
 <style scoped>
+
+body {
+  font: Arial;
+  font-size: 14px;
+
+}
 :deep(a) {
   text-decoration: none;
   color: black;
+}
+
+h1 {
+  margin-bottom: 30px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+
+  grid-template-areas: "search results";
+  grid-template-rows: 500px 500px;
+}
+
+.search {
+  background-color: white;
+  padding: 50px;
+  margin-right: 20px;
+}
+
+.results {
+  background-color: white;
+  margin-left: 20px;
+  padding: 25px;
+  overflow-y: auto;
+}
+
+.space {
+  padding: 25px;
 }
 </style>
