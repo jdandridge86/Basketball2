@@ -8,6 +8,7 @@ import Teams from '@/views/Teams.vue'
 import Games from '@/views/Games.vue'
 import Favorites from '@/views/Favorites.vue'
 import Players from '@/views/Players.vue'
+import PlayerDetails from '@/views/PlayerDetails.vue'
 import Bets from '@/views/Bets.vue'
 
 const router = createRouter({
@@ -62,6 +63,12 @@ const router = createRouter({
 			path: '/bets',
 			name: 'bets',
 			component: Bets
+		},
+		{
+			path: '/playerdetails/:playerId',
+			name: 'playerdetails',
+			component: PlayerDetails,
+			props:true,
 		},
 	],
 })

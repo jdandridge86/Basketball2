@@ -141,11 +141,19 @@ async function logout (event) {
 
 
             <div class="results">
-              <div v-for="item in items" :FirstName="item.first_name" :LastName="item.last_name ":TeamName="item.team.full_name">
+              <!--<div v-for="item in items" :FirstName="item.first_name" :LastName="item.last_name ":TeamName="item.team.full_name">
                 <p>Player's Name: {{ item.first_name}} {{ item.last_name }}</p>
                 <p>Team's Name: {{ item.team.full_name }}</p><br>
+                item.id-->
+
+              <RouterLink v-for="item in items" :to="`/playerdetails/${item.id}`">
+                <p>Player's Name: {{ item.first_name}} {{ item.last_name }}</p>
+                <p>Team's Name: {{ item.team.full_name }}</p><br>
+              </RouterLink>
+
+
+
               </div>
-            </div>
           </section>
       </section>
   </main>
