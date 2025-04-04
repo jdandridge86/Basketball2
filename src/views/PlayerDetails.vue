@@ -40,8 +40,7 @@ async function getPlayerDetails (playerId, seasonParam = "") {
       console.log(data)
 
       items.value = data.player;
-      stats.value = data.stats.data;
-      console.log(data.stats.data)
+      stats.value = data.stats.data;     
 
 
 		}

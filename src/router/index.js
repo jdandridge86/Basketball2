@@ -10,6 +10,7 @@ import Favorites from '@/views/Favorites.vue'
 import Players from '@/views/Players.vue'
 import PlayerDetails from '@/views/PlayerDetails.vue'
 import Bets from '@/views/Bets.vue'
+import TeamDetails from '@/views/TeamDetails.vue'
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,12 @@ const router = createRouter({
 			path: '/playerdetails/:playerId',
 			name: 'playerdetails',
 			component: PlayerDetails,
+			props:true,
+		},
+		{
+			path: '/teamdetails/:teamId',
+			name: 'teamdetails',
+			component: TeamDetails,
 			props:true,
 		},
 	],
