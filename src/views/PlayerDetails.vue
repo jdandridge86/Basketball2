@@ -142,17 +142,20 @@ onMounted(() => {
         </section>
         <section class="split">
             <div class="TeamDetails">
-                <div v-for="item in items" :TeamName="item.team.full_name" :abbreviation="item.abbreviation" :city="item.city" :conference="item.conference" :division="item.division"> 
+                <div v-for="item in items" :TeamName="item.team.full_name" :abbreviation="item.abbreviation" :city="item.city" :conference="item.conference" :division="item.division">
                     <h2>Player Details</h2>
                     <p>College: {{ item.college }}</p>
-                    <p>Country: {{  item.country }}</p>
-                    <p>Draft Number: {{ item.draft_number }}</p>
-                    <p>Draft Round: {{ item.draft_round }}</p><br>
+                    <p>Country: {{  item.country }}</p><br>
+
                     <p>Draft Year: {{ item.draft_year }}</p>
+                    <p>Draft Round: {{ item.draft_round }}</p>
+                    <p>Draft Number: {{ item.draft_number }}</p><br>
+
                     <p>Height: {{ item.height  }}</p>
-                    <p>Weight: {{ item.weight }}</p>
+                    <p>Weight: {{ item.weight }}</p><br>
+
                     <p>Jersey Number: {{ item.jersey_number }}</p>
-                    <p>Position: {{ item.position }}</p>
+                    <p>Position: {{ item.position }}</p><br>
                 
                     <h2>Team Details</h2>
                     <p>{{ item.team.full_name }}</p>
@@ -167,11 +170,19 @@ onMounted(() => {
                 <div class="rightAlign"><label>Season:</label><input type="text" required id="season" v-model="season" @keyup.enter="getPlayerDetails(props.playerId, season)"></div>
                     
                 <div v-for="stat in stats" :assists="stat.ast"> 
-                    <h2>Stats: {{ stat.season }}</h2>                       
+                    <h2>Stats: {{ stat.season }} Average Per Game</h2>                       
 
+                    <p>Number of Games Played: {{ stat.games_played }}</p>
+                    <p>Minutes Played: {{ stat.min }}</p>
+                    <p>Offensive Rebounds: {{ stat.oreb }}</p>
+                    <p>Defensive Rebounds: {{ stat.dreb }}</p>
+                    <p>Total Rebounds: {{ stat.reb }}</p>
                     <p>Assists: {{stat.ast}}</p>
                     <p>Blocks: {{ stat.blk }}</p>
-                    <p>Defensive Rebounds: {{ stat.dreb }}</p><br>
+                    <p>Steals: {{ stat.stl }}</p>
+                    <p>Turnovers: {{ stat.turnover }}</p>
+                    <p>Personal Fouls: {{ stat.pf }}</p>
+                    <p>Total Points Scored: {{ stat.pts }}</p><br>            
 
                     <p>Percent of 3-Point Field Goals: {{ stat.fg3_pct }}</p>
                     <p>3-Point Field Goals Attempted: {{ stat.fg3a }}</p>
@@ -184,15 +195,6 @@ onMounted(() => {
                     <p>Free Throw Percentage: {{ stat.ft_pct }}</p>
                     <p>Free Throws Attempted: {{ stat.fta }}</p>
                     <p>Free Throws Made: {{ stat.ftm }}</p><br>
-
-                    <p>Number of Games Played: {{ stat.games_played }}</p>
-                    <p>Total Number of Minutes Played: {{ stat.min }}</p>
-                    <p>Offensive Rebounds: {{ stat.oreb }}</p>
-                    <p>Personal Fouls: {{ stat.pf }}</p>
-                    <p>Total Points Scored: {{ stat.pts }}</p>
-                    <p>Total Rebounds: {{ stat.reb }}</p>
-                    <p>Steals: {{ stat.stl }}</p>
-                    <p>Turnovers: {{ stat.turnover }}</p>
 
                 </div>
             </div>
@@ -239,6 +241,7 @@ h1 {
 h2 {
     float: center;
     font-size: 30px;
+    padding-bottom: 10px;
 }
 
 .inLineBlock {
