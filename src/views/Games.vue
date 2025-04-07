@@ -44,6 +44,34 @@ async function dateSearch (event, startDateParam = "", endDateParam ="") {
 		}
 	} 
 
+  async function dateAndPlayerSearch (event, playerNameparam, startDateParam, endDateParam) {
+	event.preventDefault()
+
+  const token = userStore.token;
+  
+	
+		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/games/${playerNameparam}/${startDateParam}/${endDateParam}`
+    
+
+		const options = {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		}
+
+		let response = await fetch(url, options)	
+		
+		if (response.status === 200) {
+			
+      let data = await response.json()
+      console.log(data)
+
+      items.value = data.data;
+
+		}
+	} 
+
 
 async function logout (event) {
 	event.preventDefault()
@@ -161,10 +189,12 @@ async function logout (event) {
 
 
             <div class="results">
-              <div v-for="item in items" :date="item.date" :HomeName="item.home_team.full_name" :AwayTeam="item.visitor_team.full_name">
+              <RouterLink v-for="item in items" :to="`/gamedetails/${item.home_team.id}`" class="player-link">
                 <p>Date: {{ item.date }}</p>
                 <p>{{ item.visitor_team.full_name}} vs. {{ item.home_team.full_name }}</p><br>
-              </div>
+              </RouterLink>
+
+              <!--:date="item.date" :HomeName="item.home_team.full_name" :AwayTeam="item.visitor_team.full_name"-->
             </div>
           </section>
       </section>

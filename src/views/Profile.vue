@@ -69,7 +69,7 @@ const data = {};
   let response = await fetch(url, options)	
   
   if (response.status === 200) {
-    
+    alert("Changes saved")
     let data = await response.json()
     console.log(data)
 

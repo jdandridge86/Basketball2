@@ -318,3 +318,14 @@ input {
     background-color: lightgrey;
     float: right;
 }
+
+.player-link {
+    text-decoration: none; /* optional */
+    color: black; /* default color */
+    display: block; /* ensures hover area is full block */
+  }
+  
+  .player-link:hover {
+    color: blue; /* change this to whatever hover color you want */
+  }
+  

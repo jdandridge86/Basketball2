@@ -151,7 +151,7 @@ async function logout (event) {
 
 
             <div class="results">
-              <RouterLink v-for="item in items" :to="`/teamdetails/${item.id}`">
+              <RouterLink v-for="item in items" :to="`/teamdetails/${item.id}`" class="player-link">
                 <p>Team Name: {{ item.full_name}}</p>
                 <p>Abbreviation: {{ item.abbreviation }}</p>
                 <p>City: {{  item.city }}</p>
