@@ -189,7 +189,7 @@ async function logout (event) {
 
 
             <div class="results">
-              <RouterLink v-for="item in items" :to="`/gamedetails/${item.home_team.id}`" class="player-link">
+              <RouterLink v-for="item in items" :to="`/gamedetails/${item.id}`" class="player-link">
                 <p>Date: {{ item.date }}</p>
                 <p>{{ item.visitor_team.full_name}} vs. {{ item.home_team.full_name }}</p><br>
               </RouterLink>

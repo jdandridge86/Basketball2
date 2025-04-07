@@ -3,6 +3,7 @@ import Header from '../components/Header.vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { onMounted, ref , reactive } from 'vue'
+import { computed } from 'vue';
 
 const props = defineProps({ gameId: String })
 
@@ -11,7 +12,13 @@ const userStore = useUserStore();
 //const stat = ref(null)
 
 const router = useRouter();
-const gameDetails = ref[""];
+let items = ref([]);
+let date = ref("");
+let homeTeam = ref("");
+let homeTeamScore = ref("");
+let status  = ref("");
+let visitorTeam = ref("");
+let visitorTeamScore = ref("");
 
 const user = userStore.username;
 
@@ -36,7 +43,14 @@ async function getGameDetails (gameId) {
             let data = await response.json()
       
             console.log(data)
-            gameDetails.value = data.game;
+            date.value = data.game.date;
+            homeTeam.value = data.game.home_team;
+            homeTeamScore.value = data.game.home_team_score;
+            status.value = data.game.status;
+            visitorTeam.value = data.game.visitor_team;
+            visitorTeamScore.value = data.game.visitor_team_score;
+
+            items.value = data.playerStats;
 
             
 		} else {
@@ -134,60 +148,46 @@ onMounted(() => {
   
     <main class="padding-block-700">
         <section class="container center vertical">
-                <h1 class="fs-primary-heading">Game Details: </h1>
+                <h1 class="fs-primary-heading">Game Details </h1>
         </section>
         <section class="split">
             <div class="TeamDetails">
                     <h2>Game Details</h2>
-                    <p>
-                        Date: 
-                        Home Team Score:
-                        Visitor Team Score:
-                        Status: 
-
-                    </p>
-                    
-                    
-            </div>
+                    <div>
+                      <p>Date: {{ date }}</p>
+                      <p>Home Team: {{ homeTeam }}</p>
+                      <p>Home Team Score: {{ homeTeamScore }} </p>
+                      <p>Visitor Team: {{ visitorTeam }}</p>
+                      <p>Visitor Team Score: {{ visitorTeamScore }}</p>
+                      <p>Status: {{ status }}</p>     
+                    </div>         
+              </div>
 
             <div class="TeamStats">
-                <div class="rightAlign"></div>
-                <h2>Player Stats </h2>
-                <!--<div v-if="stat">
-                  <p>Conference Rank: {{ stat.conference_rank }}</p>
-                </div>   -->
-                <p>Home Team Stats using v-if
-                Player's Name:
-                Points:
-                Rebounds:
-                Steals:
-                Assists:
-                Blocks:
+                <div><h2>Player Stats</h2></div>
+                <div v-for="item in items" :TeamName="item.team.full_name">
+                <h2>{{ item.player_name }}</h2>
+                <p>Team: {{ item.team }}</p>
+                <p>Points:  {{ item.points }} </p>
+                <p>Rebounds: {{ item.rebounds  }} </p>
+                <p>Steals: {{ item.steals }} </p>
+                <p>Assists: {{ item.assists }} </p>
+                <p>Blocks: {{ item.blocks }} </p><br>
 
-                Percentage of 3 point field goals:
-                3 point Attempts
-                3 points made:
+                <p>Percentage of 3 point field goals: {{ item.field_goal3_percentage }} </p>
+                <p>3 point Attempts: {{ item.field_goals3_attempt }} </p>
+                <p>3 points made: {{ item.field_goals3_made }} </p><br>
 
-                Percentage of field goals:
-                field goals attempts:
-                field goals made:
+                <p>Percentage of field goals: {{ item.field_goal_percentage }} </p>
+                <p>Field goals attempts: {{ item.field_goals_attempt }} </p>
+                <p>Field goals made: {{ item.field_goals_made }} </p><br>
 
-                Percentage of free throws:
-                Free throws attempts:
-                Free throws Made:
+                <p>Percentage of free throws: {{ item.freethrow_percentage }} </p>
+                <p>Free throws attempts: {{ item.freethrows_attempt }} </p>
+                <p>Free throws Made: {{ item.freethrows_made }} </p><br>
 
-
-
-                </p>
-
-                <p>Visitor Team Stats using v-if
-
-
-                </p>
-
-                                      
-
-                
+                <!--<p>Visitor Team Stats using v-if</p> -->                                  
+              </div>
             </div>
         </section>
     </main>
