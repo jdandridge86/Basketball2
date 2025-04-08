@@ -7,19 +7,75 @@ import { useUserStore } from '@/stores/user'
 const userStore = useUserStore();
 
 const items = ref([])
+let pagesData = ref("")
+//let pagesDataParam = pagesData.value;
+let previousPage = ref("");
+//let previousPageParam = previousPage.value;
 const router = useRouter()
 let playerName = ref("");
-let playerNameParam = playerName.value;
+//let playerNameParam = playerName.value;
 
 const user = userStore.username;
 
-async function PlayerSearch (event, playerNameParam) {
+let cursors = [];
+
+/*async function bet (event) {
+event.preventDefault();
+
+const token = userStore.token;
+
+const data = {
+  gameId = ;
+  playerId = ;
+  predictions  = {
+    points
+    assists
+    rebounds
+    threes
+    steals
+  }
+};
+
+  const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/bets`
+
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  }
+
+  let response = await fetch(url, options)	
+  
+  if (response.status === 200) {
+    
+          let data = await response.json()
+    
+          console.log(data)
+          date.value = data.game.date;
+          homeTeam.value = data.game.home_team;
+          homeTeamScore.value = data.game.home_team_score;
+          status.value = data.game.status;
+          visitorTeam.value = data.game.visitor_team;
+          visitorTeamScore.value = data.game.visitor_team_score;
+
+          items.value = data.playerStats;
+
+          
+  } else {
+          console.log(url)
+      }
+}*/
+
+async function PlayerSearch (event) {
 	event.preventDefault()
 
   const token = userStore.token;
   
 	
-		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/players?name-search=${playerNameParam}`
+		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/players?name-search=${playerName.value}&per_page=25&cursor=${pagesData.value}`
 
 		const options = {
 			method: "GET",
@@ -33,9 +89,14 @@ async function PlayerSearch (event, playerNameParam) {
 		if (response.status === 200) {
 			
       let data = await response.json()
-      console.log(data)
+      //console.log(data)
+      console.log(data.meta.prev_cursor,data.meta.next_cursor)
+      cursors.push(data.meta.prev_cursor)
+      console.log(cursors)
 
       items.value = data.data;
+      pagesData.value = data.meta.next_cursor;
+      previousPage.value = data.meta.prev_cursor;
 
 		}
 	} 
@@ -67,6 +128,39 @@ async function logout (event) {
 		else if (response.status === 500) {
 			// TODO: Display error message to screen
 			console.log("Invalid email or password.")
+		}
+	}
+  
+  async function backButton (event) {
+	event.preventDefault()
+
+  const token = userStore.token;
+    cursors.pop();
+    let prevCursor = cursors.pop();
+    console.log('previous',prevCursor)
+	
+		let url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/players?name-search=${playerName.value}&per_page=25`
+    if(prevCursor != null) url += `&cursor=${prevCursor}`;
+
+		const options = {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		}
+
+		let response = await fetch(url, options)	
+		
+		if (response.status === 200) {
+			
+      let data = await response.json()
+      console.log("back",data)
+      console.log(data.meta.prev_cursor)
+
+      items.value = data.data;
+      pagesData.value = data.meta.next_cursor;
+      previousPage.value = data.meta.prev_cursor;
+
 		}
 	} 
 
@@ -134,7 +228,7 @@ async function logout (event) {
               <input type="text" required id="playerName" v-model="playerName"><br><br>				
 
               <div class="centeredButton">
-                  <button class="button" @click="PlayerSearch($event, playerName)">Search</button>
+                  <button class="button" @click="PlayerSearch($event)">Search</button>
               </div>
 
             </div>
@@ -145,6 +239,14 @@ async function logout (event) {
                 <p>Player's Name: {{ item.first_name}} {{ item.last_name }}</p>
                 <p>Team's Name: {{ item.team.full_name }}</p><br>
               </RouterLink>
+
+              <div class="centeredButton">
+                  <button class="button" @click="backButton($event)">Back</button>
+              </div>
+
+              <div class="centeredButton">
+                  <button class="button" @click="PlayerSearch($event)">Next Page</button>
+              </div>
 
 
 

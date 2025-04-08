@@ -136,9 +136,11 @@ onMounted(() => {
   
     <main class="padding-block-700">
         <section class="container center vertical">
-            <div v-for="item in items" :playerFirst="item.first_name" :playerLast="item.last_name">
-                <h1 class="fs-primary-heading">Player Details:  {{ item.first_name }} {{ item.last_name }}</h1>
+            <div v-for="item in items" :playerFirst="item.first_name" :playerLast="item.last_name" class="inLineBlock">
+                <h1 class="fs-primary-heading space">Player Details:  {{ item.first_name }} {{ item.last_name }}</h1>
+                <div><button class="button" @click="bet($event)">Bet</button></div>
             </div>
+            
         </section>
         <section class="split">
             <div class="TeamDetails">
@@ -167,7 +169,7 @@ onMounted(() => {
             </div>
 
             <div class="playerDetails">
-                <div class="rightAlign"><label>Season:</label><input type="text" required id="season" v-model="season" @keyup.enter="getPlayerDetails(props.playerId, season)"></div>
+                <div class="rightAlign"><label class="space">Season:</label><input type="text" required id="season" v-model="season" @keyup.enter="getPlayerDetails(props.playerId, season)"></div>
                     
                 <div v-for="stat in stats" :assists="stat.ast"> 
                     <h2>Stats: {{ stat.season }} Average Per Game</h2>                       
@@ -250,6 +252,10 @@ h2 {
 
 .rightAlign {
     float: right;
+}
+
+.space {
+  margin-right: 15px;
 }
 
 </style>

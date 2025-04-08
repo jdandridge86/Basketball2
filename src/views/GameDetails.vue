@@ -166,7 +166,7 @@ onMounted(() => {
             <div class="TeamStats">
                 <div><h2>Player Stats</h2></div>
                 <div v-for="item in items" :TeamName="item.team.full_name">
-                <h2>{{ item.player_name }}</h2>
+                  <h2>{{ item.player_name }}</h2>
                 <p>Team: {{ item.team }}</p>
                 <p>Points:  {{ item.points }} </p>
                 <p>Rebounds: {{ item.rebounds  }} </p>
