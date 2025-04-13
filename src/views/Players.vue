@@ -19,56 +19,6 @@ const user = userStore.username;
 
 let cursors = [];
 
-/*async function bet (event) {
-event.preventDefault();
-
-const token = userStore.token;
-
-const data = {
-  gameId = ;
-  playerId = ;
-  predictions  = {
-    points
-    assists
-    rebounds
-    threes
-    steals
-  }
-};
-
-  const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/bets`
-
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  }
-
-  let response = await fetch(url, options)	
-  
-  if (response.status === 200) {
-    
-          let data = await response.json()
-    
-          console.log(data)
-          date.value = data.game.date;
-          homeTeam.value = data.game.home_team;
-          homeTeamScore.value = data.game.home_team_score;
-          status.value = data.game.status;
-          visitorTeam.value = data.game.visitor_team;
-          visitorTeamScore.value = data.game.visitor_team_score;
-
-          items.value = data.playerStats;
-
-          
-  } else {
-          console.log(url)
-      }
-}*/
-
 async function PlayerSearch (event) {
 	event.preventDefault()
 
