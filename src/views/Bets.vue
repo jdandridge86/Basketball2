@@ -8,8 +8,13 @@ import { computed } from 'vue'
 const userStore = useUserStore();
 
 const router = useRouter()
+const props = defineProps({
+  playerId: String,
+  gameId: String 
+});
 
 const user = userStore.username;
+
 let items = ref([])
 let AvgPoints = ref();
 let AvgAssists = ref();
@@ -18,16 +23,20 @@ let AvgRebound = ref();
 let AvgSteals = ref();
 let AvgThrees = ref();
 
-/*completedItems.forEach(obj => {
-      console.log(obj);
-      AvgPoints = Math.abs(obj.predictions.points - obj.actualStats.points);
- });*/
+
 
  const completedItems = computed(() => {
   const filtered = items.value.filter(item => item.status === "completed");
   console.log("Inside computed property, filtered items:", filtered);
   return filtered;
 });
+
+const pendingItems = computed(() => {
+  const filtered2 = items.value.filter(item => item.status === "pending");
+  console.log("Inside computed property, filtered items:", filtered2);
+  return filtered2;
+});
+
 
 function calculateAverage(event) {
   event.preventDefault();
@@ -78,11 +87,14 @@ function calculateAverage(event) {
   AvgSteals.value = avgStealsDiff;
   AvgThrees.value = avgThreesDiff;
   AvgScore.value = avgScore;
+  console.log("Available IDs in myPID:", Object.keys(userStore.myPID));
+  console.log("Available IDs in myGameInfo:", Object.keys(userStore.myGameInfo));
 
 }
 
 
 async function getBets() {	
+  console.log("getBets() called");
 
 const token = userStore.token;
 
@@ -96,14 +108,17 @@ const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.n
     },
   }
 
-  let response = await fetch(url, options)	
   
-  if (response.status === 200) {
-    let data = await response.json()
-    items.value = data;
-    console.log(data)
+    const response = await fetch(url, options);
+    console.log("Fetch response status:", response.status);
+
+    if (response.status === 200) {
+      const data = await response.json();
+      items.value = data;
+    } else {
+      console.warn("Failed to fetch bets. Status:", response.status);
+    }
   }
-}
 
 
 async function logout (event) {
@@ -175,8 +190,8 @@ async function logout (event) {
 
 onMounted(async () => {
     await getBets();
-    // Create a synthetic event object since your function expects one
-    calculateAverage({ preventDefault: () => {} });
+  
+  calculateAverage({ preventDefault: () => {} });
 })
 
 </script>
@@ -212,29 +227,28 @@ onMounted(async () => {
 
             <div class="results">
               <h2>Completed Games</h2>
-              <div v-for="completedItem in completedItems">
-                <div class="inlineGrid"><p>Team Name vs Team Name</p><p></p><p>Date</p></div>
-                <p>Player: Player Name Here</p>
-                <div class="inlineGrid"><p></p><p>Predicted</p><p>Actual</p></div>
-                <div class="inlineGrid"><p>Points:</p><p>{{completedItem.predictions.points}}</p><p>{{ completedItem.actualStats.points }}</p></div>
-                <div class="inlineGrid"><p>Assists:</p><p> {{ completedItem.predictions.assists }}</p><p>{{ completedItem.actualStats.assists }}</p></div>
-                <div class="inlineGrid"><p>Rebounds:</p><p> {{ completedItem.predictions.rebounds }}</p><p>{{ completedItem.actualStats.rebounds }}</p></div>
-                <div class="inlineGrid"><p>Steals:</p><p> {{ completedItem.predictions.steals }}</p><p>{{ completedItem.actualStats.steals }}</p></div>
-                <div class="inlineGrid"><p>Threes:</p><p> {{ completedItem.predictions.threes }}</p><p>{{ completedItem.actualStats.threes }}</p></div>
-                <p>Score: {{ completedItem.score }}</p><br>
-              </div>
+              <div v-for="completedItem in completedItems" :props.playerId = "completedItem.playerId">
+                  <!--<div class="inlineGrid"><p>{{userStore.myGameInfo.value[completedItem.gameId]?.visitorName || 'Unknown Team'}} vs {{ userStore.myGameInfo.value[completedItem.gameId]?.homeName || 'Unknown Team' }}</p><p></p><p>{{ userStore.myGameInfo.value[completedItem.gameId]?.date || 'Unknown Date' }}</p></div>
+                  <p>Player: {{ userStore.myPID[completedItem.playerId] || 'Unknown Player' }}</p>-->
+                  <div class="inlineGrid"><p></p><p>Predicted</p><p>Actual</p></div>
+                  <div class="inlineGrid"><p>Points:</p><p>{{completedItem.predictions.points}}</p><p>{{ completedItem.actualStats.points }}</p></div>
+                  <div class="inlineGrid"><p>Assists:</p><p> {{ completedItem.predictions.assists }}</p><p>{{ completedItem.actualStats.assists }}</p></div>
+                  <div class="inlineGrid"><p>Rebounds:</p><p> {{ completedItem.predictions.rebounds }}</p><p>{{ completedItem.actualStats.rebounds }}</p></div>
+                  <div class="inlineGrid"><p>Steals:</p><p> {{ completedItem.predictions.steals }}</p><p>{{ completedItem.actualStats.steals }}</p></div>
+                  <div class="inlineGrid"><p>Threes:</p><p> {{ completedItem.predictions.threes }}</p><p>{{ completedItem.actualStats.threes }}</p></div>
+                  <p>Score: {{ completedItem.score }}</p><br>
+                </div>
               <h2>Pending Games</h2>
-              <div v-for="item in items">
+              <div v-for="pendingItem in pendingItems">
                 <div class="inlineGrid"><p>Team Name vs Team Name</p><p></p><p>Date</p></div>
-                <p>Player: Player Name Here</p>
-                <p>Game Status: {{ item.status }}</p>
+                <p>Player: {{ userStore.myPID[pendingItem.playerId] || 'Unknown Player' }}</p>
                 <div class="inlineGrid"><p></p><p>Predicted</p><p>Actual</p></div>
-                <div class="inlineGrid"><p>Points:</p><p>{{item.predictions.points}}</p><p>{{ item.actualStats.points }}</p></div>
-                <div class="inlineGrid"><p>Assists:</p><p> {{ item.predictions.assists }}</p><p>{{ item.actualStats.assists }}</p></div>
-                <div class="inlineGrid"><p>Rebounds:</p><p> {{ item.predictions.rebounds }}</p><p>{{ item.actualStats.rebounds }}</p></div>
-                <div class="inlineGrid"><p>Steals:</p><p> {{ item.predictions.steals }}</p><p>{{ item.actualStats.steals }}</p></div>
-                <div class="inlineGrid"><p>Threes:</p><p> {{ item.predictions.threes }}</p><p>{{ item.actualStats.threes }}</p></div>
-                <p>Score: {{ item.score }}</p><br>
+                <div class="inlineGrid"><p>Points:</p><p>{{pendingItem.predictions.points}}</p><p>{{ pendingItem.actualStats.points }}</p></div>
+                <div class="inlineGrid"><p>Assists:</p><p> {{ pendingItem.predictions.assists }}</p><p>{{ pendingItem.actualStats.assists }}</p></div>
+                <div class="inlineGrid"><p>Rebounds:</p><p> {{ pendingItem.predictions.rebounds }}</p><p>{{ pendingItem.actualStats.rebounds }}</p></div>
+                <div class="inlineGrid"><p>Steals:</p><p> {{ pendingItem.predictions.steals }}</p><p>{{ pendingItem.actualStats.steals }}</p></div>
+                <div class="inlineGrid"><p>Threes:</p><p> {{ pendingItem.predictions.threes }}</p><p>{{ pendingItem.actualStats.threes }}</p></div>
+                <p>Score: {{ pendingItem.score }}</p><br>
               </div>
               
             </div>

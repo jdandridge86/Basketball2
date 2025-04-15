@@ -5,6 +5,7 @@ import { useUserStore } from '@/stores/user'
 //import { defineProps } from 'vue';
 import { onMounted, ref , reactive } from 'vue'
 import Modal from '@/components/Modal.vue';
+import { computed } from 'vue'
 
 const props = defineProps({ playerId: String })
 
@@ -22,19 +23,23 @@ function save(e) {
 	modal.value.close(e)
 }
 
-const selectGame = (gameId) => {
-  selectedGameId.value = gameId;
-  modal.value.open()
-  console.log('Selected game ID:', gameId);
+const selectGame = (gameId, visitorName, homeName, date) => {
+  selectedGame.id = gameId;
+  selectedGame.visitorName = visitorName;
+  selectedGame.homeName = homeName;
+  selectedGame.date = date;
+  modal.value.open();
+  console.log('Selected game:', selectedGame);
 };
 
 
 const items = ref([])
+const storeFirstName = ref("")
+const storeLastName = ref("")
 const things = ref([])
 const stats = ref([])
 const router = useRouter()
 let season = ref("")
-let seasonParam = season.value;
 let points = ref("");
 let assists = ref("");
 let rebounds = ref("");
@@ -42,9 +47,19 @@ let threes = ref("");
 let steals = ref("");
 let startDate = ref("");
 let endDate = ref("");
-const selectedGameId = ref(null);
+const selectedGame = reactive({
+  id: null,
+  visitorName: null,
+  homeName: null,
+  date: null
+});
 
 const user = userStore.username;
+
+const fullName = computed(() => {
+  return `${storeFirstName.value} ${storeLastName.value}`
+});
+
 
 async function dateAndPlayerSearch() {
   const token = userStore.token;
@@ -68,6 +83,7 @@ async function dateAndPlayerSearch() {
       console.log(data)
 
       things.value = data.data;
+    
 		}
 
 	} 
@@ -76,7 +92,7 @@ async function dateAndPlayerSearch() {
 async function placeBet () {	
 
   const data = {
-    gameId: selectedGameId.value,
+    gameId: selectedGame.id,
     playerId: props.playerId,
     predictions: {
       points: points.value,
@@ -104,6 +120,11 @@ async function placeBet () {
 		let response = await fetch(url, options)	
 		
 		if (response.status === 201) {
+      userStore.setPID(props.playerId, fullName.value);
+      console.log(props.playerId, fullName.value)
+
+      //userStore.setGameInfo(gameId.value, visitorName.value, homeName.value, date.value);
+      userStore.setGameInfo(selectedGame.id, selectedGame.visitorName, selectedGame.homeName, selectedGame.date);
 			
 			alert("Your bet was saved")
 		}
@@ -132,13 +153,17 @@ async function getPlayerDetails (playerId, seasonParam = "") {
 		if (response.status === 200) {
 			
       let data = await response.json()
-      console.log(data)
+      //console.log(data.player.data.last_name)
+      console.log(data.stats)
+     
 
       items.value = data.player;
-      stats.value = data.stats.data;     
-
-
-		}
+      stats.value = data.stats.data;  
+      storeFirstName.value = data.player.data.first_name;  
+      storeLastName.value = data.player.data.last_name; 
+      
+      
+  }
 	} 
 
 
@@ -250,17 +275,13 @@ onMounted(() => {
                     <p>{{ thing.datetime }}</p>
                     <p>{{ thing.id }}</p><br>
                   </div>-->
-                  <div v-for="thing in things" :key="thing.id" @click="selectGame(thing.id)" class="player-link" :class="{ 'selected': selectedGameId === thing.id }">
+                  <div v-for="thing in things" :key="thing.id" @click="selectGame(thing.id, thing.visitor_team.full_name, thing.home_team.full_name,thing.datetime)" class="player-link" :class="{ 'selected': selectedGame.id === thing.id }">
                     <p>{{ thing.visitor_team.full_name }} vs {{ thing.home_team.full_name }}</p>
                     <p>{{ thing.datetime }}</p><br>
                     <!--<p>Game ID: {{ thing.id }}</p>-->
                   </div>
 
-                  <div v-if="selectedGameId" class="selected-game-info">
-                    <!--<p>Selected Game ID: {{ selectedGameId }}</p>
-                     Add any actions for the selected game -->
-                    <button class="button" @click="modal.open()">Bet</button>
-                  </div>
+                  
                 </div>
             </div>
 
@@ -325,7 +346,8 @@ onMounted(() => {
 
     <Modal ref="modal">
         <template #header>
-            <h2 class="yellow">Place a Bet</h2>
+            <h2 class="yellow">Place a Bet: {{ fullName }}<br>
+            {{ selectedGame.visitorName}} vs {{selectedGame.homeName }}</h2>
         </template>
         <template #main>
             <input v-model="points" type="text" placeholder="points"><br>
