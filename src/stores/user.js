@@ -44,7 +44,11 @@ export const useUserStore = defineStore('user', () => {
   }
 
   function setGameInfo(key, visitorName, homeName, date) {
-    myGameInfo.value[key] = {visitorName, homeName, date};
+    myGameInfo.value[key] = {
+      visitorName: visitorName, 
+      homeName: homeName, 
+      date: date
+    };
   }
 
   function getGameInfo(gameId) {

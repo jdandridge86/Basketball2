@@ -2,7 +2,7 @@
 import Header from '../components/Header.vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { onMounted, ref , reactive } from 'vue'
+import { onMounted, ref , reactive, watch } from 'vue'
 
 const props = defineProps({ teamId: String })
 
@@ -27,6 +27,80 @@ const abbreviation = ref("");
 const router = useRouter()
 let season = ref("")
 let seasonParam = season.value;
+let favoriteTeam = ref(false);
+
+watch(favoriteTeam, (newValue) => {
+  console.log("Favorite player changed to:", newValue);
+});
+  
+
+async function toggleFavoritePlayer() {
+  favoriteTeam.value = !favoriteTeam.value;
+  console.log("Toggled to:", favoriteTeam.value);
+  
+  if (favoriteTeam.value === true) {
+    await addFavoriteTeam();
+  } else {
+    await removeFavoriteTeam();
+  }
+}
+
+async function addFavoriteTeam () {	
+
+const data = {
+  team_id: props.teamId
+}
+  
+const token = userStore.token;
+
+const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/favorite-teams`
+
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  }
+
+  let response = await fetch(url, options)	
+  
+  if (response.status === 201) {
+   
+    alert("Favorite Team Added")
+  }
+  else if (response.status === 400) {
+    // TODO: Display error message to screen
+    console.log("testing")
+  }
+}
+
+async function removeFavoriteTeam () {	
+
+const token = userStore.token;
+
+const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/favorite-players/${props.teamId}`
+
+  const options = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    }
+  }
+
+  let response = await fetch(url, options)	
+  
+  if (response.status === 200) {
+   
+    alert("Favorite Team Removed")
+  }
+  else if (response.status === 400) {
+    // TODO: Display error message to screen
+    console.log("testing")
+  }
+}
 
 
 const user = userStore.username;
@@ -156,14 +230,19 @@ onMounted(() => {
         <div><RouterLink to="/teams">Teams</RouterLink></div>
         <div><RouterLink to="/bets">Bets</RouterLink></div>
         <div><RouterLink to="/favorites">Favorites</RouterLink></div>
-        <div><a @click="logout">Log Out</a></div>
-        <div><a @click="deleteUser">Delete Account</a></div>
+        <div><a href="#" @click="logout">Log Out</a></div>
+        <div><a href="#" @click="deleteUser">Delete Account</a></div>
       </nav>
     </Header>
   
     <main class="padding-block-700">
         <section class="container center vertical">
-                <h1 class="fs-primary-heading">Team Details: {{ teamName }} ({{ abbreviation }})</h1>
+          <div class="inLineBlock">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="50" height="55" class="star" :class="favoriteTeam ? 'filledStar' : 'emptyStar'" style="vertical-align: middle" @click="toggleFavoritePlayer">
+            <path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/>
+            </svg>
+            <h1 class="fs-primary-heading">Team Details: {{ teamName }} ({{ abbreviation }})</h1>
+          </div>
         </section>
         <section class="split">
             <div class="TeamDetails">
@@ -248,6 +327,18 @@ h2 {
 
 .rightAlign {
     float: right;
+}
+
+.emptyStar {
+  padding-right: 7px;
+  fill: none;
+  stroke: #E3B048;
+  stroke-width: 20;
+}
+
+.filledStar {
+  fill: #E3B048;
+  padding-right: 7px;
 }
 
 </style>

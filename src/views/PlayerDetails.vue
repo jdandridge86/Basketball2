@@ -47,7 +47,7 @@ let threes = ref("");
 let steals = ref("");
 let startDate = ref("");
 let endDate = ref("");
-let favoritePlayer = ref(true);
+let favoritePlayer = ref(false);
 
 
 
@@ -94,7 +94,6 @@ async function dateAndPlayerSearch() {
 
   watch(favoritePlayer, (newValue) => {
   console.log("Favorite player changed to:", newValue);
-  // Don't call toggleFavoritePlayer here
 });
   
 
@@ -158,7 +157,7 @@ const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.n
   
   if (response.status === 200) {
    
-    alert("Favorite Player Deleted")
+    alert("Favorite Player Removed")
   }
   else if (response.status === 400) {
     // TODO: Display error message to screen
@@ -202,6 +201,7 @@ async function placeBet () {
 
       //userStore.setGameInfo(gameId.value, visitorName.value, homeName.value, date.value);
       userStore.setGameInfo(selectedGame.id, selectedGame.visitorName, selectedGame.homeName, selectedGame.date);
+      console.log(selectedGame.id, selectedGame.visitorName, selectedGame.homeName, selectedGame.date)
 			
 			alert("Your bet was saved")
 		}
@@ -326,8 +326,8 @@ onMounted(() => {
         <div><RouterLink to="/teams">Teams</RouterLink></div>
         <div><RouterLink to="/bets">Bets</RouterLink></div>
         <div><RouterLink to="/favorites">Favorites</RouterLink></div>
-        <div><a @click="logout">Log Out</a></div>
-        <div><a @click="deleteUser">Delete Account</a></div>
+        <div><a href="#" @click="logout">Log Out</a></div>
+        <div><a href="#" @click="deleteUser">Delete Account</a></div>
       </nav>
     </Header>
   
@@ -427,14 +427,15 @@ onMounted(() => {
     <Modal ref="modal">
         <template #header>
             <h2 class="yellow">Place a Bet: {{ fullName }}<br>
-            {{ selectedGame.visitorName}} vs {{selectedGame.homeName }}</h2>
+            {{ selectedGame.visitorName}} vs {{selectedGame.homeName }}<br>
+            {{ selectedGame.date }}</h2>
         </template>
         <template #main>
-            <input v-model="points" type="text" placeholder="points"><br>
-            <input v-model="assists" type="text" placeholder="assists"><br>
-            <input v-model="rebounds" type="text" placeholder="rebounds"><br>
-            <input v-model="threes" type="text" placeholder="threes"><br>
-            <input v-model="steals" type="text" placeholder="steals"><br>
+            <div class="inLineBlock center"><input v-model="points" type="text" placeholder="points"></div><br>
+            <div class="inLineBlock center"><input v-model="assists" type="text" placeholder="assists"></div><br>
+            <div class="inLineBlock center"><input v-model="rebounds" type="text" placeholder="rebounds"></div><br>
+            <div class="inLineBlock center"><input v-model="threes" type="text" placeholder="threes"></div><br>
+            <div class="inLineBlock center"><input v-model="steals" type="text" placeholder="steals"></div><br>
         </template>
         <template #footer>
             <button @click.stop="cancel">Cancel</button>

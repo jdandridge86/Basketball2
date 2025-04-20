@@ -1,10 +1,18 @@
 <script setup>
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+function goHome() {
+    router.push({
+				name: 'main'
+			})
+}
 
 </script>
 
 <template>
     <div>
-        <img src="/AllNetLogo.png">
+        <img src="/AllNetLogo.png" @click="goHome" style="cursor: pointer;">
     </div>
 </template>
 

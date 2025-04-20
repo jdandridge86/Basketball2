@@ -162,8 +162,8 @@ onMounted(() => {
       <div><RouterLink to="/teams">Teams</RouterLink></div>
       <div><RouterLink to="/bets">Bets</RouterLink></div>
       <div><RouterLink to="/favorites">Favorites</RouterLink></div>
-      <div><a @click="logout">Log Out</a></div>
-      <div><a @click="deleteUser">Delete Account</a></div>
+      <div><a href="#" @click="logout">Log Out</a></div>
+      <div><a href="#" @click="deleteUser">Delete Account</a></div>
     </nav>
   </Header>
 

@@ -2,7 +2,7 @@
 import Header from '../components/Header.vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { onMounted, ref , reactive } from 'vue'
+import { onMounted, ref , reactive, watch } from 'vue'
 import { computed } from 'vue';
 
 const props = defineProps({ gameId: String })
@@ -141,8 +141,8 @@ onMounted(() => {
         <div><RouterLink to="/teams">Teams</RouterLink></div>
         <div><RouterLink to="/bets">Bets</RouterLink></div>
         <div><RouterLink to="/favorites">Favorites</RouterLink></div>
-        <div><a @click="logout">Log Out</a></div>
-        <div><a @click="deleteUser">Delete Account</a></div>
+        <div><a href="#" @click="logout">Log Out</a></div>
+      <div><a href="#" @click="deleteUser">Delete Account</a></div>
       </nav>
     </Header>
   
@@ -163,6 +163,7 @@ onMounted(() => {
                     </div>         
               </div>
 
+              
             <div class="TeamStats">
                 <div><h2>Player Stats</h2></div>
                 <div v-for="item in items" :TeamName="item.team.full_name">
@@ -240,6 +241,18 @@ h2 {
 
 .rightAlign {
     float: right;
+}
+
+.emptyStar {
+  padding-right: 7px;
+  fill: none;
+  stroke: #E3B048;
+  stroke-width: 20;
+}
+
+.filledStar {
+  fill: #E3B048;
+  padding-right: 7px;
 }
 
 </style>

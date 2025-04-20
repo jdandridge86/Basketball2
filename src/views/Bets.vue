@@ -14,7 +14,10 @@ const props = defineProps({
 });
 
 const user = userStore.username;
-
+let players = ref([])
+let playerName = ref("")
+//let firstName = ref("")
+//let lastName = ref("")
 let items = ref([])
 let AvgPoints = ref();
 let AvgAssists = ref();
@@ -67,12 +70,12 @@ function calculateAverage(event) {
   });
   
   // Calculate averages
-  const avgPointsDiff = totalPointsDiff / completedItems.value.length;
-  const avgAssistsDiff = totalAssistsDiff / completedItems.value.length;
-  const avgReboundsDiff = totalReboundsDiff / completedItems.value.length;
-  const avgStealsDiff = totalStealsDiff / completedItems.value.length;
-  const avgThreesDiff = totalThreesDiff / completedItems.value.length;
-  const avgScore = totalScore / completedItems.value.length;
+  const avgPointsDiff = (totalPointsDiff / completedItems.value.length).toFixed(2);
+  const avgAssistsDiff = (totalAssistsDiff / completedItems.value.length).toFixed(2);
+  const avgReboundsDiff = (totalReboundsDiff / completedItems.value.length).toFixed(2);
+  const avgStealsDiff = (totalStealsDiff / completedItems.value.length).toFixed(2);
+  const avgThreesDiff = (totalThreesDiff / completedItems.value.length).toFixed(2);
+  const avgScore = (totalScore / completedItems.value.length).toFixed(2);
   
   console.log("Average Points Difference:", avgPointsDiff);
   console.log("Average Assists Difference:", avgAssistsDiff);
@@ -92,13 +95,93 @@ function calculateAverage(event) {
 
 }
 
+async function getPlayerDetails (playerId) {
+
+const token = userStore.token;
+
+
+  const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/players/${playerId}`
+
+  const options = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }
+
+  let response = await fetch(url, options)	
+  
+  if (response.status === 200) {
+    
+    let data = await response.json()
+    //console.log(data.player.data.last_name)
+    console.log(data.stats)
+   
+    userStore.myPID[playerId] = {
+    firstName: data.player.data.first_name, 
+    lastName: data.player.data.last_name
+    };
+  }
+} 
+
+function getPlayerName(playerId) {
+  // Check if we already have the player data
+  if (!userStore.myPID[playerId]) {
+    // If not, fetch it - but this won't be immediately available
+    getPlayerDetails(playerId);
+    return 'Loading...';
+  }
+  
+  // Return the player name from the store
+  const player = userStore.myPID[playerId];
+  return `${player.firstName || ''} ${player.lastName || ''}`;
+}
+
+async function getGameDetails (gameId) {
+
+const token = userStore.token;
+
+
+  const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/games/${gameId}`
+
+  const options = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }
+
+  let response = await fetch(url, options)	
+  
+  if (response.status === 200) {
+    
+    let data = await response.json()
+    //console.log(data.player.data.last_name)
+    console.log(data)
+   
+    userStore.myGameInfo[gameId] = {
+    visitorName: data.game.visitor_team, 
+    homeName: data.game.home_team,
+    date: data.game.date
+    };
+  }
+} 
+
+function getGameInfo(gameId) {
+  if (!userStore.myGameInfo || !userStore.myGameInfo[gameId]) {
+    getGameDetails(gameId); // Call getGameDetails instead
+    return { visitorName: 'Loading...', homeName: 'Loading...', date: 'Loading...' };
+  }
+  return userStore.myGameInfo[gameId];
+}
+
 
 async function getBets() {	
   console.log("getBets() called");
 
 const token = userStore.token;
 
-const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/bets`
+const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/bets?limit=30`
 
   const options = {
     method: "GET",
@@ -188,8 +271,23 @@ async function logout (event) {
     }
 }
 
+/*onMounted(async () => {
+  await getBets();
+
+  calculateAverage({ preventDefault: () => {} });
+})*/
+
 onMounted(async () => {
-    await getBets();
+  await getBets();
+
+  for (const item of items.value) {
+    if (item.playerId) {
+      await getPlayerDetails(item.playerId);
+    }
+    if (item.gameId) {
+      await getGameInfo(item.gameId);
+    }
+  }
   
   calculateAverage({ preventDefault: () => {} });
 })
@@ -205,8 +303,8 @@ onMounted(async () => {
       <div><RouterLink to="/teams">Teams</RouterLink></div>
       <div><RouterLink to="/bets">Bets</RouterLink></div>
       <div><RouterLink to="/favorites">Favorites</RouterLink></div>
-      <div><a @click="logout">Log Out</a></div>
-      <div><a @click="deleteUser">Delete Account</a></div>
+      <div><a href="#" @click="logout">Log Out</a></div>
+      <div><a href="#" @click="deleteUser">Delete Account</a></div>
     </nav>
   </Header>
 
@@ -226,10 +324,12 @@ onMounted(async () => {
 
 
             <div class="results">
-              <h2>Completed Games</h2>
+              <h2 class="center">Completed Games</h2>
               <div v-for="completedItem in completedItems" :props.playerId = "completedItem.playerId">
-                  <!--<div class="inlineGrid"><p>{{userStore.myGameInfo.value[completedItem.gameId]?.visitorName || 'Unknown Team'}} vs {{ userStore.myGameInfo.value[completedItem.gameId]?.homeName || 'Unknown Team' }}</p><p></p><p>{{ userStore.myGameInfo.value[completedItem.gameId]?.date || 'Unknown Date' }}</p></div>
+                  <!--<div class="inlineGrid"><p>{{userStore.myGameInfo[completedItem.gameId].visitorName || 'Unknown Team'}} vs {{ userStore.myGameInfo[completedItem.gameId].homeName || 'Unknown Team' }}</p><p></p><p>{{ userStore.myGameInfo[completedItem.gameId].date || 'Unknown Date' }}</p></div>
                   <p>Player: {{ userStore.myPID[completedItem.playerId] || 'Unknown Player' }}</p>-->
+                  <div><p>{{ getGameInfo(completedItem.gameId).visitorName }} vs {{ getGameInfo(completedItem.gameId).homeName}}</p><p>{{ getGameInfo(completedItem.gameId).date }}</p></div>
+                  <div><p>Player: {{ getPlayerName(completedItem.playerId) }}</p></div>
                   <div class="inlineGrid"><p></p><p>Predicted</p><p>Actual</p></div>
                   <div class="inlineGrid"><p>Points:</p><p>{{completedItem.predictions.points}}</p><p>{{ completedItem.actualStats.points }}</p></div>
                   <div class="inlineGrid"><p>Assists:</p><p> {{ completedItem.predictions.assists }}</p><p>{{ completedItem.actualStats.assists }}</p></div>
@@ -238,10 +338,13 @@ onMounted(async () => {
                   <div class="inlineGrid"><p>Threes:</p><p> {{ completedItem.predictions.threes }}</p><p>{{ completedItem.actualStats.threes }}</p></div>
                   <p>Score: {{ completedItem.score }}</p><br>
                 </div>
-              <h2>Pending Games</h2>
+              <h2 class="center">Pending Games</h2>
               <div v-for="pendingItem in pendingItems">
-                <div class="inlineGrid"><p>Team Name vs Team Name</p><p></p><p>Date</p></div>
-                <p>Player: {{ userStore.myPID[pendingItem.playerId] || 'Unknown Player' }}</p>
+                <!--<div class="inlineGrid"><p>Team Name vs Team Name</p><p></p><p>Date</p></div>
+                <div class="inlineGrid"><p>{{userStore.myGameInfo[pendingItem.gameId].visitorName || 'Unknown Team'}}</p></div> vs {{ userStore.myGameInfo[pendingItem.gameId].homeName || 'Unknown Team' }}</p><p></p><p>{{ userStore.myGameInfo[pendingItem.gameId].date || 'Unknown Date' }}</p></div>
+                <p>Player: {{ userStore.myPID[pendingItem.playerId] || 'Unknown Player' }}</p>-->
+                <div><p>{{ getGameInfo(pendingItem.gameId).visitorName }} vs {{ getGameInfo(pendingItem.gameId).homeName}}</p><p>{{ getGameInfo(pendingItem.gameId).date }}</p></div>
+                <div><p>Player: {{ getPlayerName(pendingItem.playerId) }}</p></div>
                 <div class="inlineGrid"><p></p><p>Predicted</p><p>Actual</p></div>
                 <div class="inlineGrid"><p>Points:</p><p>{{pendingItem.predictions.points}}</p><p>{{ pendingItem.actualStats.points }}</p></div>
                 <div class="inlineGrid"><p>Assists:</p><p> {{ pendingItem.predictions.assists }}</p><p>{{ pendingItem.actualStats.assists }}</p></div>
