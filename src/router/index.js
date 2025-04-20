@@ -6,7 +6,6 @@ import Main from '@/views/Main.vue'
 import Profile from '@/views/Profile.vue'
 import Teams from '@/views/Teams.vue'
 import Games from '@/views/Games.vue'
-import Favorites from '@/views/Favorites.vue'
 import Players from '@/views/Players.vue'
 import PlayerDetails from '@/views/PlayerDetails.vue'
 import Bets from '@/views/Bets.vue'
@@ -55,11 +54,6 @@ const router = createRouter({
 			path: '/players',
 			name: 'players',
 			component: Players
-		},
-		{
-			path: '/favorites',
-			name: 'favorites',
-			component: Favorites
 		},
 		{
 			path: '/bets',
