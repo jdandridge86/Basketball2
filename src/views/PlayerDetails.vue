@@ -27,6 +27,17 @@ function save(e) {
 	return new Date(dateString).toLocaleString("en-US", { month: "numeric", day: 'numeric', year:'numeric' })
 }*/
 
+function getTodaysDate() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+  const day = String(today.getDate()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
+
+  console.log(formattedDate);
+  return formattedDate;
+}
+
 const formatDate = (dateString) => {
 	return new Date(dateString).toLocaleString("en-US", { timeZone: 'America/New_York' }) + " EST"
 }
@@ -53,7 +64,7 @@ let assists = ref("");
 let rebounds = ref("");
 let threes = ref("");
 let steals = ref("");
-let startDate = ref("");
+const startDate = ref(getTodaysDate()); 
 let endDate = ref("");
 let favoritePlayer = ref(false);
 
@@ -80,7 +91,7 @@ async function dateAndPlayerSearch() {
   
 	
 		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/games/${props.playerId}/${startDate.value}/${endDate.value}`
-    
+    console.log(startDate.value)
 
 		const options = {
 			method: "GET",
@@ -355,7 +366,7 @@ onMounted(() => {
                 <div class="UpcomingGames">
                   <h2>Bet on Upcoming Games</h2>
                   <label>Game Start Date:   </label>
-                  <input type="date" required id="startDate" v-model="startDate"><br><br>
+                  <input type="date" required id="startDate" v-model="startDate" disabled><br><br>
                   <label>Game End Date:   </label>
                   <input type="date" required id="endDate" v-model="endDate"><br><br>
                   <div class="center"><button class="button" @click="dateAndPlayerSearch($event)">Search</button></div><br><br>

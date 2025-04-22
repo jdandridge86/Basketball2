@@ -85,8 +85,12 @@ async function backButton (event) {
 		}
 	} 
 
+/*const formatDate = (dateString) => {
+	return new Date(dateString).toLocaleString("en-US", { month: "numeric", day: 'numeric', year:'numeric', timeZone: 'America/New_York' })
+}*/
+
 const formatDate = (dateString) => {
-	return new Date(dateString).toLocaleString("en-US", { month: "numeric", day: 'numeric', year:'numeric' })
+	return new Date(dateString).toLocaleString("en-US", { timeZone: 'America/New_York' }) + " EST"
 }
 
 async function rangeSearch (event) {
@@ -266,7 +270,7 @@ async function logout (event) {
 
             <div class="results">
               <RouterLink v-for="item in items" :to="`/gamedetails/${item.id}`" class="player-link">
-                <p>Date: {{ formatDate(item.date) }}</p>
+                <p>Date: {{ formatDate(item.datetime) }}</p>
                 <p>{{ item.visitor_team.full_name}} vs. {{ item.home_team.full_name }}</p><br>
               </RouterLink>
 

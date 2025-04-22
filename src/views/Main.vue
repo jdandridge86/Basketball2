@@ -3,6 +3,7 @@ import Header from '../components/Header.vue'
 import { useRouter } from 'vue-router'
 import { onMounted, ref , reactive } from 'vue'
 import { useUserStore } from '@/stores/user'
+import { computed } from 'vue'
 
 const userStore = useUserStore();
 
@@ -12,6 +13,12 @@ const items = ref([])
 const user = userStore.username;
 const players = ref([])
 const teams = ref([])
+const selectedPlayer = ref(null)
+const selectedTeam = ref(null)
+let teamName = ref("")
+const teamMap = reactive({});
+
+
 
 /*const formatDate = (dateString) => {
 	return new Date(dateString).toLocaleString("en-US", { month: "numeric", day: 'numeric', year:'numeric' })
@@ -51,8 +58,9 @@ const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.n
   
   if (response.status === 200) {
     let data = await response.json()
-    players.value = data;
-   
+    players.value = data.favoritePlayers;
+
+     
     console.log(data)
   }
   else if (response.status === 401) {
@@ -79,7 +87,7 @@ const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.n
   
   if (response.status === 200) {
     let data = await response.json()
-    teams.value = data;
+    teams.value = data.favoriteTeams;
    
     console.log(data)
   }
@@ -183,10 +191,86 @@ async function dateSearch (event, dateOnly) {
 
 		}
 	} 
+  
+  function getPlayerName(playerId) {
+  // Check if we already have the player data
+  if (!userStore.myPID[playerId]) {
+    // If not, fetch it - but this won't be immediately available
+    getPlayerDetails(playerId);
+    return 'Loading...';
+  }
+  
+  // Return the player name from the store
+  const player = userStore.myPID[playerId];
+  return `${player.firstName || ''} ${player.lastName || ''}`;
+}
+
+function getTeamName(teamId) {
+  if (!teamMap[teamId]) {
+    // Fetch it if not available yet
+    getTeamDetails(teamId);
+    return 'Loading...';
+  }
+
+  return teamMap[teamId];
+}
+
+
+async function getPlayerDetails (playerId) {
+
+const token = userStore.token;
+
+
+  const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/players/${playerId}`
+
+  const options = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }
+
+  let response = await fetch(url, options)	
+  
+  if (response.status === 200) {
+    
+    let data = await response.json()
+    //console.log(data.player.data.last_name)
+    console.log(data.stats)
+   
+    userStore.myPID[playerId] = {
+    firstName: data.player.data.first_name, 
+    lastName: data.player.data.last_name
+    };
+  }
+}
+
+async function getTeamDetails(teamId) {
+  const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/teams/${teamId}`;
+
+  const options = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  let response = await fetch(url, options);
+
+  if (response.status === 200) {
+    let data = await response.json();
+
+    // Store full name in teamMap
+    teamMap[teamId] = data.team.full_name;
+  }
+}
 
   onMounted(async () => {
-  getFavoritePlayers();
-  getFavoriteTeams();
+  await getFavoritePlayers();
+  
+  await getFavoriteTeams();
+  
+
   const date = await getTodaysDate();
   
   // Create a reactive reference to hold the date
@@ -224,16 +308,16 @@ async function dateSearch (event, dateOnly) {
             <div class="search">
               <div>
                 <h2>Favorite Players</h2>
-                <RouterLink v-for="player in players" :to="`/playerdetails/${player}`" class="player-link">
-                  <p> {{ player }} </p><br>
-                </RouterLink>
-                
+                  <RouterLink v-for="player in players" :to="`/playerdetails/${player}`" class="player-link" @click="() => selectedPlayer = player">
+                    <p>{{ getPlayerName(player) }}</p><br>
+                  </RouterLink>
               </div>
+
                 
               <div>
                 <h2>Favorite Team</h2>
-                <RouterLink v-for="team in teams" :to="`/teamdetails/${team}`" class="player-link">
-                  <p>{{ team }}</p><br>
+                <RouterLink v-for="team in teams" :to="`/teamdetails/${team}`" class="player-link" @click="() => selectedTeam = team">
+                  <p>{{ getTeamName(team) }}</p><br>
                 </RouterLink>
                 
               </div>
@@ -254,6 +338,11 @@ async function dateSearch (event, dateOnly) {
 </template>
 
 <style scoped>
+.player-item {
+  display: block;
+  margin-bottom: 5px;
+}
+
 body {
   font: Arial;
   font-size: 14px;
