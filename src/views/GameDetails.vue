@@ -12,7 +12,6 @@ const userStore = useUserStore();
 const formatDate = (dateString) => {
 	return new Date(dateString).toLocaleString("en-US", { month: "numeric", day: 'numeric', year:'numeric' })
 }
-
 //const stat = ref(null)
 
 const router = useRouter();
