@@ -26,8 +26,6 @@ let AvgRebound = ref();
 let AvgSteals = ref();
 let AvgThrees = ref();
 
-
-
  const completedItems = computed(() => {
   const filtered = items.value.filter(item => item.status === "completed");
   console.log("Inside computed property, filtered items:", filtered);
@@ -344,7 +342,7 @@ onMounted(async () => {
                 <p>Player: {{ userStore.myPID[pendingItem.playerId] || 'Unknown Player' }}</p>-->
                 <div><p>{{ getGameInfo(pendingItem.gameId).visitorName }} vs {{ getGameInfo(pendingItem.gameId).homeName}}</p><p>{{ getGameInfo(pendingItem.gameId).date }}</p></div>
                 <div><p>Player: {{ getPlayerName(pendingItem.playerId) }}</p></div>
-                <div class="inlineGrid"><p></p><p>Predicted</p><p>Actual</p></div>
+                <div class="inlineGrid"><p></p><p>Predicted</p></div>
                 <div class="inlineGrid"><p>Points:</p><p>{{pendingItem.predictions.points}}</p><p>{{ pendingItem.actualStats.points }}</p></div>
                 <div class="inlineGrid"><p>Assists:</p><p> {{ pendingItem.predictions.assists }}</p><p>{{ pendingItem.actualStats.assists }}</p></div>
                 <div class="inlineGrid"><p>Rebounds:</p><p> {{ pendingItem.predictions.rebounds }}</p><p>{{ pendingItem.actualStats.rebounds }}</p></div>

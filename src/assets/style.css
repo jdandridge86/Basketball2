@@ -284,7 +284,9 @@ body {
 
 .button:hover,
 .button:focus-visible {
-    background-color: var(--clr-accent-300);
+    /*background-color: var(--clr-accent-300);*/
+    background-color: #7C0A01;
+    opacity: 0.5;
 }
 
 .button[data-type="inverted"]:hover,
@@ -314,10 +316,10 @@ fieldset {
     width: 100%;
 }
 
-input {
+/*input {
     background-color: lightgrey;
     float: right;
-}
+}*/
 
 .player-link {
     text-decoration: none; /* optional */

@@ -7,7 +7,7 @@ import { useUserStore } from '@/stores/user'
 const userStore = useUserStore();
 
 const items = ref([])
-let pagesData = ref("")
+let pagesData = ref("");
 //let pagesDataParam = pagesData.value;
 let previousPage = ref("");
 //let previousPageParam = previousPage.value;
@@ -25,7 +25,7 @@ async function PlayerSearch (event) {
   const token = userStore.token;
   
 	
-		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/players?name-search=${playerName.value}&per_page=25&cursor=${pagesData.value}`
+		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/players?name-search=${playerName.value}&per_page=25`
 
 		const options = {
 			method: "GET",
@@ -39,10 +39,10 @@ async function PlayerSearch (event) {
 		if (response.status === 200) {
 			
       let data = await response.json()
-      //console.log(data)
-      console.log(data.meta.prev_cursor,data.meta.next_cursor)
-      cursors.push(data.meta.prev_cursor)
-      console.log(cursors)
+      console.log(data)
+      //console.log(data.meta.prev_cursor,data.meta.next_cursor)
+      //cursors.push(data.meta.prev_cursor)
+      //console.log(cursors)
 
       items.value = data.data;
       pagesData.value = data.meta.next_cursor;
@@ -106,6 +106,38 @@ async function logout (event) {
       let data = await response.json()
       console.log("back",data)
       console.log(data.meta.prev_cursor)
+
+      items.value = data.data;
+      pagesData.value = data.meta.next_cursor;
+      previousPage.value = data.meta.prev_cursor;
+
+		}
+	} 
+
+  async function nextButton (event) {
+	event.preventDefault()
+
+  const token = userStore.token;
+  
+	
+		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/players?name-search=${playerName.value}&per_page=25&cursor=${pagesData.value}`
+
+		const options = {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		}
+
+		let response = await fetch(url, options)	
+		
+		if (response.status === 200) {
+			
+      let data = await response.json()
+      console.log(data)
+      //console.log(data.meta.prev_cursor,data.meta.next_cursor)
+      //cursors.push(data.meta.prev_cursor)
+      //console.log(cursors)
 
       items.value = data.data;
       pagesData.value = data.meta.next_cursor;
@@ -189,12 +221,9 @@ async function logout (event) {
                 <p>Team's Name: {{ item.team.full_name }}</p><br>
               </RouterLink>
 
-              <div class="centeredButton">
-                  <button class="button" @click="backButton($event)">Back</button>
-              </div>
-
-              <div class="centeredButton">
-                  <button class="button" @click="PlayerSearch($event)">Next Page</button>
+              <div class="center inLineBlock">
+                  <button class="button margin" @click="backButton($event)">Back</button>
+                  <button class="button margin" @click="nextButton($event)">Next</button>
               </div>
 
 
@@ -206,6 +235,14 @@ async function logout (event) {
 </template>
 
 <style scoped>
+
+.inLineBlock {
+    display: flex;
+}
+
+.margin {
+  margin: 10px;
+}
 
 body {
   font: Arial;
@@ -244,5 +281,10 @@ h1 {
 
 .space {
   padding: 25px;
+}
+
+input {
+    background-color: lightgrey;
+    float: right;
 }
 </style>

@@ -9,6 +9,10 @@ const props = defineProps({ gameId: String })
 
 const userStore = useUserStore();
 
+const formatDate = (dateString) => {
+	return new Date(dateString).toLocaleString("en-US", { month: "numeric", day: 'numeric', year:'numeric' })
+}
+
 //const stat = ref(null)
 
 const router = useRouter();
@@ -151,9 +155,9 @@ onMounted(() => {
         </section>
         <section class="split">
             <div class="TeamDetails">
-                    <h2>Game Details</h2>
+                    <h2 class="center">Game Details</h2>
                     <div>
-                      <p>Date: {{ date }}</p>
+                      <p>Date: {{ formatDate(date) }}</p>
                       <p>Home Team: {{ homeTeam }}</p>
                       <p>Home Team Score: {{ homeTeamScore }} </p>
                       <p>Visitor Team: {{ visitorTeam }}</p>
@@ -164,7 +168,7 @@ onMounted(() => {
 
               
             <div class="TeamStats">
-                <div><h2>Player Stats</h2></div>
+                <div class="center"><h2>Player Stats</h2></div>
                 <div v-for="item in items" :TeamName="item.team.full_name">
                   <h2>{{ item.player_name }}</h2>
                 <p>Team: {{ item.team }}</p>

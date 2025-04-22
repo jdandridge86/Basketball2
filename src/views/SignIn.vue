@@ -60,7 +60,7 @@ async function signIn (event) {
 			errorMsg.textContent = "Invalid email or password";
 		}
 	} else {
-		errorMsg.textContent = "Please complete all field"
+		errorMsg.textContent = "Please complete all fields"
 	}
 
 }
@@ -102,5 +102,10 @@ async function signIn (event) {
 :deep(a) {
   text-decoration: none;
   color: black;
+}
+
+input {
+    background-color: lightgrey;
+    float: right;
 }
 </style>

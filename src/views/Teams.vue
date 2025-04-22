@@ -132,7 +132,7 @@ async function logout (event) {
           <h1 class="fs-primary-heading">Teams</h1>
           <section class="split">
             <div class="search">
-              <label>Team Name:   </label><br>
+              <label>Team Name:   </label>
               <input type="text" required id="teamName" v-model="teamName"><br><br>				
 
               <div class="centeredButton">
@@ -211,5 +211,9 @@ h1 {
 
 .space {
   padding: 25px;
+}
+
+input {
+    background-color: lightgrey;
 }
 </style>

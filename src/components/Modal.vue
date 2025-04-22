@@ -66,7 +66,7 @@ function close(e) {
     border-radius: 50%;
 }
 
-header {
+/*header {
     display: flex;
     margin-bottom: var(--size-100);
     justify-content: space-between;
@@ -74,7 +74,7 @@ header {
 
 header > img {
     margin-left: var(--size-500);
-}
+}*/
 
 footer {
     display: flex;

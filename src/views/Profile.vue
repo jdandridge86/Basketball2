@@ -3,14 +3,30 @@ import Header from '../components/Header.vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { onMounted, ref , reactive } from 'vue'
+import Modal from '@/components/Modal.vue';
 
-
+//Modal
+const modal = ref(null)
 const userStore = useUserStore();
+
+
+function cancel(e) {
+	modal.value.close(e)
+}
+
+function save(e) {
+  placeBet()
+	modal.value.close(e)
+}
 
 const router = useRouter()
 const username = ref("")
 const email = ref("")
 const password = ref("")
+
+const username1 = ref("")
+const email1 = ref("")
+const password1 = ref("")
 
 //const user = userStore.username;
 
@@ -167,32 +183,112 @@ onMounted(() => {
   </Header>
 
   <main class="padding-block-700">
-      <section class="container center vertical">
+      <section class="container2 center vertical">
           <h1 class="fs-primary-heading">Profile</h1>
-          <form>
 				<fieldset>
-					<label>Username:   </label>
-					<input type="username" id="username" v-model="username"><br /><br />					
+					<div class="inLineBlock margin">
+            <p class="margin-right">Username:</p>
+            <p class="fakeInput">{{ username }}</p>
+          </div></br>					
 
-					<label>Email:   </label>
-					<input type="email" id="email" v-model="email"><br /><br />
+          <div class="inLineBlock margin">
+					  <p class="margin-right">Email:</p>
+            <p class="fakeInput">{{ email }}</p>
+          </div></br>
 
-					<label>Password:   </label>
-					<input type="password" minlength="8" id="password" v-model="password"><br /><br />
+          <div class="inLineBlock margin">
+					<p class="margin-right">Password:</p> <p class="fakeInput"></p>
+          </div></br>
 
 					<div class="centeredButton">
-            <button class="button" @click="editProfile">Edit Profile</button>
+            <button class="button" @click="modal.open">Edit Profile</button>
           </div>
 
 				</fieldset>
-			</form>
       </section>
   </main>
+
+  <!--Modal-->
+  <Modal ref="modal">
+        <template #header>
+            <h2>Edit Profile</h2><br>
+        </template>
+        <template #main>
+          <form>
+            <fieldset>
+              <label>Username:   </label>
+              <input type="username" id="username" v-model="username"><br /><br />					
+
+              <label>Email:   </label>
+              <input type="email" id="email" v-model="email"><br /><br />
+
+              <label>Password:   </label>
+              <input type="password" minlength="8" id="password" v-model="password"><br /><br />
+
+            </fieldset>
+			    </form>
+        </template>
+        <template #footer>
+            <button class="margin-right padding" @click.stop="cancel">Back</button>
+            <button class="padding" @click="editProfile">Save</button>
+        </template>
+	</Modal>
 </template>
 
 <style scoped>
+
+.container2 {
+  max-width: 300px;
+  width: 100%;
+  margin: 0 auto; /* this centers it */
+  text-align: center; /* optional: centers text inside */
+}
+
+.inLineBlock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+
+.fakeInput {
+  /* Optional styling for input appearance */
+  background-color: lightgrey;
+  padding: 3px;
+  border-radius: 4px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+  width: 200px;
+  height: 25px;
+  text-align: right;
+}
+
+.margin-right {
+  margin-right: 10px;
+}
+
+.padding {
+  padding: 5px;
+}
+
 :deep(a) {
   text-decoration: none;
   color: black;
 }
+
+input {
+    background-color: lightgrey;
+    float: right;
+}
+
+h2 {
+    text-align: center;
+    font-size: 40px;
+    color: #E3B048
+}
+
+
 </style>

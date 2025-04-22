@@ -119,4 +119,9 @@ async function join (event) {
   text-decoration: none;
   color: black;
 }
+
+input {
+    background-color: lightgrey;
+    float: right;
+}
 </style>

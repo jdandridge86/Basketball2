@@ -8,22 +8,29 @@ const userStore = useUserStore();
 
 const items = ref([])
 const router = useRouter()
+let dateOnly = ref("")
 let date = ref("");
-let startDateParam = date.value;
+//let startDateParam = date.value;
 let startDate = ref("");
-startDateParam = startDate.value;
+//startDateParam = startDate.value;
 let endDate = ref("");
 let endDateParam = endDate.value;
+let pagesData = ref("");
+let previousPage = ref("");
+let cursors = [];
 
 const user = userStore.username;
 
-async function dateSearch (event, startDateParam = "", endDateParam ="") {
+async function backButton (event) {
 	event.preventDefault()
 
   const token = userStore.token;
-  
+    cursors.pop();
+    let prevCursor = cursors.pop();
+    console.log('previous',prevCursor)
 	
-		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/games?start_date=${startDateParam}&end_date=${endDateParam}`
+		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/games?start_date=${startDate.value}&end_date=${endDate.value}&per_page=25`
+    if(prevCursor != null) url += `&cursor=${prevCursor}`;
 
 		const options = {
 			method: "GET",
@@ -37,9 +44,107 @@ async function dateSearch (event, startDateParam = "", endDateParam ="") {
 		if (response.status === 200) {
 			
       let data = await response.json()
+      console.log("back",data)
+      console.log(data.meta.prev_cursor)
+
+      items.value = data.data;
+      pagesData.value = data.meta.next_cursor;
+      previousPage.value = data.meta.prev_cursor;
+
+		}
+	} 
+
+  async function nextButton (event) {
+	event.preventDefault()
+
+  const token = userStore.token;
+  
+	
+		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/games?start_date=${startDate.value}&end_date=${endDate.value}&per_page=25&cursor=${pagesData.value}`
+   		const options = {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		}
+
+		let response = await fetch(url, options)	
+		
+		if (response.status === 200) {
+			
+      let data = await response.json()
+      console.log(data)
+      //console.log(data.meta.prev_cursor,data.meta.next_cursor)
+      //cursors.push(data.meta.prev_cursor)
+      //console.log(cursors)
+
+      items.value = data.data;
+      pagesData.value = data.meta.next_cursor;
+      previousPage.value = data.meta.prev_cursor;
+
+		}
+	} 
+
+const formatDate = (dateString) => {
+	return new Date(dateString).toLocaleString("en-US", { month: "numeric", day: 'numeric', year:'numeric' })
+}
+
+async function rangeSearch (event) {
+	event.preventDefault()
+
+  const token = userStore.token;
+  
+	
+		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/games?start_date=${startDate.value}&end_date=${endDate.value}`
+
+		const options = {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		}
+
+		let response = await fetch(url, options)	
+		
+		if (response.status === 200) {
+			
+      let data = await response.json()
+      console.log(startDate.value)
       console.log(data)
 
       items.value = data.data;
+      pagesData.value = data.meta.next_cursor;
+      previousPage.value = data.meta.prev_cursor;
+
+		}
+	} 
+
+  async function dateSearch (event) {
+	event.preventDefault()
+
+  const token = userStore.token;
+  
+	
+		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/games?start_date=${dateOnly.value}&end_date=${dateOnly.value}`
+
+		const options = {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		}
+
+		let response = await fetch(url, options)	
+		
+		if (response.status === 200) {
+			
+      let data = await response.json()
+      console.log(startDate.value)
+      console.log(data)
+
+      items.value = data.data;
+      pagesData.value = data.meta.next_cursor;
+      previousPage.value = data.meta.prev_cursor;
 
 		}
 	} 
@@ -134,25 +239,25 @@ async function logout (event) {
           <section class="split">
             <div class="search">
               <div>
-                <p>Search by date of game:</p>
-                <label>Game Date:   </label><br>
-                <input type="date" required id="date" v-model="date"><br><br>	
+                <h2>Search by date of game:</h2>
+                <label>Game Date:   </label>
+                <input type="date" required id="date" v-model="dateOnly"><br><br>	
                 
                 <div class="centeredButton">
-                    <button class="button" @click="dateSearch($event, date, date)">Search</button><br><br>
+                    <button class="button" @click="dateSearch($event)">Search</button><br><br>
                 </div>
               </div>
                 
               <div>
-                <p>Search by range</p>
-                <label>Game Start Date:   </label><br>
+                <h2>Search by range</h2>
+                <label>Game Start Date:   </label>
                 <input type="date" required id="startDate" v-model="startDate"><br><br>
 
-                <label>Game End Date:   </label><br>
+                <label>Game End Date:   </label>
                 <input type="date" required id="endDate" v-model="endDate"><br><br>
 
                 <div class="centeredButton">
-                    <button class="button" @click="dateSearch($event, startDate, endDate)">Search</button>
+                    <button class="button" @click="rangeSearch($event)">Search</button>
                 </div>
               </div>
 
@@ -161,9 +266,14 @@ async function logout (event) {
 
             <div class="results">
               <RouterLink v-for="item in items" :to="`/gamedetails/${item.id}`" class="player-link">
-                <p>Date: {{ item.date }}</p>
+                <p>Date: {{ formatDate(item.date) }}</p>
                 <p>{{ item.visitor_team.full_name}} vs. {{ item.home_team.full_name }}</p><br>
               </RouterLink>
+
+              <div class="center inLineBlock">
+                  <button class="button margin" @click="backButton($event)">Back</button>
+                  <button class="button margin" @click="nextButton($event)">Next</button>
+              </div>
 
               <!--:date="item.date" :HomeName="item.home_team.full_name" :AwayTeam="item.visitor_team.full_name"-->
             </div>
@@ -173,6 +283,14 @@ async function logout (event) {
 </template>
 
 <style scoped>
+
+.inLineBlock {
+    display: flex;
+}
+
+.margin {
+  margin: 10px;
+}
 
 body {
   font: Arial;
@@ -211,5 +329,16 @@ h1 {
 
 .space {
   padding: 25px;
+}
+
+input {
+    background-color: lightgrey;
+    float: right;
+}
+
+h2 {
+    float: center;
+    font-size: 20px;
+    padding-bottom: 10px;
 }
 </style>

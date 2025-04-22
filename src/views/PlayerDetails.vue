@@ -23,6 +23,14 @@ function save(e) {
 	modal.value.close(e)
 }
 
+/*const formatDate = (dateString) => {
+	return new Date(dateString).toLocaleString("en-US", { month: "numeric", day: 'numeric', year:'numeric' })
+}*/
+
+const formatDate = (dateString) => {
+	return new Date(dateString).toLocaleString("en-US", { timeZone: 'America/New_York' }) + " EST"
+}
+
 const selectGame = (gameId, visitorName, homeName, date) => {
   selectedGame.id = gameId;
   selectedGame.visitorName = visitorName;
@@ -49,7 +57,9 @@ let startDate = ref("");
 let endDate = ref("");
 let favoritePlayer = ref(false);
 
-
+/*const startDate = (dateString) => {
+	return new Date(dateString).toLocaleString("en-US", { year:'numeric', month: "numeric", day: 'numeric' })
+}*/
 
 const selectedGame = reactive({
   id: null,
@@ -343,20 +353,20 @@ onMounted(() => {
         <section class="split">
             <div class="TeamDetails">
                 <div class="UpcomingGames">
-                  <h2>Upcoming Games</h2>
-                  <label>Game Start Date:   </label><br>
+                  <h2>Bet on Upcoming Games</h2>
+                  <label>Game Start Date:   </label>
                   <input type="date" required id="startDate" v-model="startDate"><br><br>
-                  <label>Game End Date:   </label><br>
+                  <label>Game End Date:   </label>
                   <input type="date" required id="endDate" v-model="endDate"><br><br>
-                  <div><button class="button" @click="dateAndPlayerSearch($event)">Search</button></div><br><br>
+                  <div class="center"><button class="button" @click="dateAndPlayerSearch($event)">Search</button></div><br><br>
                   <!--<div v-for="thing in things" :key="thing.id" @click="modal.open()" class="player-link">            
                     <p>{{ thing.visitor_team.full_name }} vs {{ thing.home_team.full_name }}</p>
                     <p>{{ thing.datetime }}</p>
                     <p>{{ thing.id }}</p><br>
                   </div>-->
-                  <div v-for="thing in things" :key="thing.id" @click="selectGame(thing.id, thing.visitor_team.full_name, thing.home_team.full_name,thing.datetime)" class="player-link" :class="{ 'selected': selectedGame.id === thing.id }">
-                    <p>{{ thing.visitor_team.full_name }} vs {{ thing.home_team.full_name }}</p>
-                    <p>{{ thing.datetime }}</p><br>
+                  <div v-for="thing in things" :key="thing.id"  @click="selectGame(thing.id, thing.visitor_team.full_name, thing.home_team.full_name,thing.datetime)" class="player-link" :class="{ 'selected': selectedGame.id === thing.id }">
+                    <p class="cursor">{{ thing.visitor_team.full_name }} vs {{ thing.home_team.full_name }}</p>
+                    <p class="cursor">{{ formatDate(thing.datetime) }}</p><br>
                     <!--<p>Game ID: {{ thing.id }}</p>-->
                   </div>
 
@@ -427,7 +437,7 @@ onMounted(() => {
         <template #header>
             <h2 class="yellow">Place a Bet: {{ fullName }}<br>
             {{ selectedGame.visitorName}} vs {{selectedGame.homeName }}<br>
-            {{ selectedGame.date }}</h2>
+            {{ formatDate(selectedGame.date) }}</h2>
         </template>
         <template #main>
             <div class="inLineBlock center"><input v-model="points" type="text" placeholder="points"></div><br>
@@ -437,13 +447,21 @@ onMounted(() => {
             <div class="inLineBlock center"><input v-model="steals" type="text" placeholder="steals"></div><br>
         </template>
         <template #footer>
-            <button @click.stop="cancel">Cancel</button>
-            <button @click.stop="save">Save</button>
+            <button class="margin-right padding" @click.stop="cancel">Cancel</button>
+            <button class="padding" @click.stop="save">Save</button>
         </template>
 	</Modal>
   </template>
 
 <style scoped>
+
+.margin-right {
+  margin-right: 10px;
+}
+
+.padding {
+  padding: 5px;
+}
 
 .border {
   border-right: 2px solid black;
@@ -453,6 +471,9 @@ onMounted(() => {
   display: inline-grid;
   grid-template-columns: repeat(2, 300px); /* Three columns, each 50px wide */
   grid-gap: 80px; /* 10px gap between cells */
+}
+.cursor {
+  cursor: pointer;
 }
 
 body {
@@ -490,8 +511,8 @@ h1 {
 }
 
 h2 {
-    float: center;
-    font-size: 30px;
+    text-align: center;
+    font-size: 27px;
     padding-bottom: 10px;
 }
 
@@ -523,4 +544,8 @@ h2 {
   padding-right: 7px;
 }
 
+input {
+    background-color: lightgrey;
+    float: right;
+}
 </style>

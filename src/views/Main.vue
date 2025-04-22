@@ -8,9 +8,30 @@ const userStore = useUserStore();
 
 const router = useRouter()
 
+const items = ref([])
 const user = userStore.username;
 const players = ref([])
 const teams = ref([])
+
+/*const formatDate = (dateString) => {
+	return new Date(dateString).toLocaleString("en-US", { month: "numeric", day: 'numeric', year:'numeric' })
+}*/
+
+const formatDate = (dateString) => {
+	return new Date(dateString).toLocaleString("en-US", { timeZone: 'America/New_York' }) + " EST"
+}
+
+function getTodaysDate() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+  const day = String(today.getDate()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
+
+  console.log(formattedDate);
+  return formattedDate;
+}
+
 
 async function getFavoritePlayers() {	
 
@@ -136,10 +157,49 @@ async function logout (event) {
     }
 }
 
-onMounted(() => {
-    getFavoritePlayers();
-    getFavoriteTeams();
-})
+async function dateSearch (event, dateOnly) {
+  event.preventDefault();
+  const token = userStore.token;
+  
+	
+		const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/games?start_date=${dateOnly.value}&end_date=${dateOnly.value}`
+
+		const options = {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		}
+
+		let response = await fetch(url, options)	
+		
+		if (response.status === 200) {
+			
+      let data = await response.json()
+      
+      console.log(data)
+
+      items.value = data.data;
+
+		}
+	} 
+
+  onMounted(async () => {
+  getFavoritePlayers();
+  getFavoriteTeams();
+  const date = await getTodaysDate();
+  
+  // Create a reactive reference to hold the date
+  const dateOnly = ref(date);
+  
+  // Create a mock event object since there's no actual event
+  const mockEvent = {
+    preventDefault: () => {}
+  };
+  
+  // Call dateSearch with the proper parameters
+  dateSearch(mockEvent, dateOnly);
+});
 
 </script>
 
@@ -165,7 +225,7 @@ onMounted(() => {
               <div>
                 <h2>Favorite Players</h2>
                 <RouterLink v-for="player in players" :to="`/playerdetails/${player}`" class="player-link">
-                  <p> {{ userStore.myPID[player] }} </p><br>
+                  <p> {{ player }} </p><br>
                 </RouterLink>
                 
               </div>
@@ -182,9 +242,11 @@ onMounted(() => {
 
 
             <div class="results">
-              
-
-              
+              <h2 class="center">Today's Games</h2>
+              <div v-for="item in items" :to="`/gamedetails/${item.id}`">
+                <p>Date & Time: {{ formatDate(item.datetime) }}</p>
+                <p>{{ item.visitor_team.full_name}} vs. {{ item.home_team.full_name }}</p><br>
+              </div>           
             </div>
           </section>
       </section>
@@ -229,5 +291,11 @@ h1 {
 
 .space {
   padding: 25px;
+}
+
+h2 {
+    float: center;
+    font-size: 30px;
+    padding-bottom: 10px;
 }
 </style>
