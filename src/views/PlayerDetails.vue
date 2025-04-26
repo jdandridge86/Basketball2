@@ -66,11 +66,57 @@ let threes = ref("");
 let steals = ref("");
 const startDate = ref(getTodaysDate()); 
 let endDate = ref("");
-let favoritePlayer = ref(false);
+let favoritePlayer = ref();
+let players = ref("")
 
 /*const startDate = (dateString) => {
 	return new Date(dateString).toLocaleString("en-US", { year:'numeric', month: "numeric", day: 'numeric' })
 }*/
+
+function checkFavorite() {
+  favoritePlayer.value = false;
+  
+  for (const player of players.value) {
+    if (player === props.playerId) {
+      favoritePlayer.value = true;
+      return; 
+    }
+  }
+}
+
+async function getFavoritePlayers() {	
+  const token = userStore.token;
+  const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/favorite-players`;
+
+  const options = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    }
+  };
+
+  try {
+    let response = await fetch(url, options);
+    
+    if (response.status === 200) {
+      let data = await response.json();
+      players.value = data.favoritePlayers;
+      console.log(data);
+      return data.favoritePlayers; // Return the data
+    }
+    else if (response.status === 401) {
+      // TODO: Display error message to screen
+      console.log("error");
+      throw new Error("Unauthorized");
+    } else {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error fetching favorite players:", error);
+    throw error; // Re-throw the error so the caller knows something went wrong
+  }
+}
 
 const selectedGame = reactive({
   id: null,
@@ -332,9 +378,16 @@ async function logout (event) {
     }
 }
 
-onMounted(() => {
-    getPlayerDetails(props.playerId, undefined);
-  });
+onMounted(async () => {
+  getPlayerDetails(props.playerId, undefined);
+  try {
+    await getFavoritePlayers();
+    checkFavorite(); // This will run after getFavoritePlayers completes
+  } catch (error) {
+    // Handle any errors that might have occurred
+    console.error("Failed to load favorite players:", error);
+  }
+});
 
 </script>
 

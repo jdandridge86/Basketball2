@@ -14,6 +14,7 @@ let previousPage = ref("");
 const router = useRouter()
 let playerName = ref("");
 //let playerNameParam = playerName.value;
+let playerSearchLength = ref();
 
 const user = userStore.username;
 
@@ -45,8 +46,10 @@ async function PlayerSearch (event) {
       //console.log(cursors)
 
       items.value = data.data;
+      playerSearchLength.value = data.data.length;
       pagesData.value = data.meta.next_cursor;
       previousPage.value = data.meta.prev_cursor;
+      console.log(data.length)
 
 		}
 	} 
@@ -216,6 +219,7 @@ async function logout (event) {
 
 
             <div class="results">
+              <div v-if="playerSearchLength === 0">No player found</div>
               <RouterLink v-for="item in items" :to="`/playerdetails/${item.id}`" class="player-link">
                 <p>Player's Name: {{ item.first_name}} {{ item.last_name }}</p>
                 <p>Team's Name: {{ item.team.full_name }}</p><br>

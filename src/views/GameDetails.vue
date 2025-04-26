@@ -22,6 +22,7 @@ let homeTeamScore = ref("");
 let status  = ref("");
 let visitorTeam = ref("");
 let visitorTeamScore = ref("");
+let playerStatLength = ref();
 
 const user = userStore.username;
 
@@ -52,8 +53,10 @@ async function getGameDetails (gameId) {
             status.value = data.game.status;
             visitorTeam.value = data.game.visitor_team;
             visitorTeamScore.value = data.game.visitor_team_score;
+            playerStatLength.value = data.playerStats.length;
 
             items.value = data.playerStats;
+            console.log(data.playerStats.length)
 
             
 		} else {
@@ -168,6 +171,7 @@ onMounted(() => {
               
             <div class="TeamStats">
                 <div class="center"><h2>Player Stats</h2></div>
+                <div v-if="playerStatLength === 0">Player stats are not available at this time</div>
                 <div v-for="item in items" :TeamName="item.team.full_name">
                   <h2>{{ item.player_name }}</h2>
                 <p>Team: {{ item.team }}</p>

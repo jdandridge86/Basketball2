@@ -28,11 +28,51 @@ const router = useRouter()
 let season = ref("")
 let seasonParam = season.value;
 let favoriteTeam = ref(false);
+let teams = ref("")
 
 watch(favoriteTeam, (newValue) => {
   console.log("Favorite player changed to:", newValue);
 });
+
+function checkFavorite() {
+  favoriteTeam.value = false;
   
+  for (const team of teams.value) {
+    if (team === props.teamId) {
+      favoriteTeam.value = true;
+      return; 
+    }
+  }
+}
+
+async function getFavoriteTeams() {	
+
+const token = userStore.token;
+
+const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/favorite-teams`
+
+  const options = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    }
+  }
+
+  let response = await fetch(url, options)	
+  
+  if (response.status === 200) {
+    let data = await response.json()
+    teams.value = data.favoriteTeams;
+   
+    console.log(data)
+  }
+  else if (response.status === 401) {
+    // TODO: Display error message to screen
+    console.log("error")
+  }
+}
+
 
 async function toggleFavoritePlayer() {
   favoriteTeam.value = !favoriteTeam.value;
@@ -80,7 +120,7 @@ async function removeFavoriteTeam () {
 
 const token = userStore.token;
 
-const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/favorite-players/${props.teamId}`
+const url = `https://csci-430-server-dubbabadgmf8hpfk.eastus2-01.azurewebsites.net/favorite-teams/${props.teamId}`
 
   const options = {
     method: "DELETE",
@@ -215,9 +255,16 @@ async function logout (event) {
     }
 }
 
-onMounted(() => {
+onMounted(async () => {
     getTeamDetails(props.teamId, undefined);
-})
+    try {
+    await getFavoriteTeams();
+    checkFavorite(); // This will run after getFavoritePlayers completes
+  } catch (error) {
+    // Handle any errors that might have occurred
+    console.error("Failed to load favorite players:", error);
+  }
+});
 
 </script>
 

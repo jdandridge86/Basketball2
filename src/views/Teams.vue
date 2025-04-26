@@ -15,6 +15,7 @@ let teamName = ref("");
 let teamNameParam = teamName.value;
 let conference = ref("");
 let conferenceParam = conference.value;
+let teamSearchLength = ref();
 
 async function teamSearch (event, teamNameParam = "", conferenceParam = "") {
 	event.preventDefault()
@@ -39,6 +40,7 @@ async function teamSearch (event, teamNameParam = "", conferenceParam = "") {
       console.log(data)
 
       items.value = data.data;
+      teamSearchLength.value = data.data.length;
 
 		}
 	} 
@@ -150,6 +152,7 @@ async function logout (event) {
 
 
             <div class="results">
+              <div v-if="teamSearchLength === 0">No Teams Found</div>
               <RouterLink v-for="item in items" :to="`/teamdetails/${item.id}`" class="player-link">
                 <p>Team Name: {{ item.full_name}}</p>
                 <p>Abbreviation: {{ item.abbreviation }}</p>
